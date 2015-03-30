@@ -1,0 +1,45 @@
+Line 15: Class MSComctlLib.ImageList of control ImageList1 was not a loaded control class.
+Line 45: Class MSComDlg.CommonDialog of control GuardarAbrir was not a loaded control class.
+Line 52: Class MSComctlLib.StatusBar of control barraTVW was not a loaded control class.
+Line 81: Class MSComctlLib.Toolbar of control menuTVW was not a loaded control class.
+Line 122: Class MSComctlLib.TreeView of control tvwStruct was not a loaded control class.
+Line 151: Class MSComctlLib.ImageList of control ImageList2 was not a loaded control class.
+Line 18: The property name _ExtentX in ImageList1 is invalid.
+Line 19: The property name _ExtentY in ImageList1 is invalid.
+Line 21: The property name ImageWidth in ImageList1 is invalid.
+Line 22: The property name ImageHeight in ImageList1 is invalid.
+Line 23: The property name MaskColor in ImageList1 is invalid.
+Line 24: The property name _Version in ImageList1 is invalid.
+Line 43: The property name Images in ImageList1 is invalid.
+Line 48: The property name _ExtentX in GuardarAbrir is invalid.
+Line 49: The property name _ExtentY in GuardarAbrir is invalid.
+Line 50: The property name _Version in GuardarAbrir is invalid.
+Line 59: The property name _ExtentX in barraTVW is invalid.
+Line 60: The property name _ExtentY in barraTVW is invalid.
+Line 61: The property name _Version in barraTVW is invalid.
+Line 79: The property name Panels in barraTVW is invalid.
+Line 88: The property name _ExtentX in menuTVW is invalid.
+Line 89: The property name _ExtentY in menuTVW is invalid.
+Line 90: The property name ButtonWidth in menuTVW is invalid.
+Line 91: The property name ButtonHeight in menuTVW is invalid.
+Line 93: The property name ImageList in menuTVW is invalid.
+Line 94: The property name _Version in menuTVW is invalid.
+Line 120: The property name Buttons in menuTVW is invalid.
+Line 128: The property name _ExtentX in tvwStruct is invalid.
+Line 129: The property name _ExtentY in tvwStruct is invalid.
+Line 130: The property name _Version in tvwStruct is invalid.
+Line 131: The property name HideSelection in tvwStruct is invalid.
+Line 132: The property name LabelEdit in tvwStruct is invalid.
+Line 133: The property name LineStyle in tvwStruct is invalid.
+Line 134: The property name Sorted in tvwStruct is invalid.
+Line 135: The property name Style in tvwStruct is invalid.
+Line 136: The property name Checkboxes in tvwStruct is invalid.
+Line 137: The property name HotTracking in tvwStruct is invalid.
+Line 138: The property name SingleSel in tvwStruct is invalid.
+Line 139: The property name ImageList in tvwStruct is invalid.
+Line 154: The property name _ExtentX in ImageList2 is invalid.
+Line 155: The property name _ExtentY in ImageList2 is invalid.
+Line 157: The property name ImageWidth in ImageList2 is invalid.
+Line 158: The property name ImageHeight in ImageList2 is invalid.
+Line 159: The property name MaskColor in ImageList2 is invalid.
+Line 160: The property name _Version in ImageList2 is invalid.

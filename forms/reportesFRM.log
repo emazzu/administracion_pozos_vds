@@ -1,0 +1,36 @@
+Line 66: Class FPSpreadADO.fpSpread of control SPD was not a loaded control class.
+Line 89: Class CRVIEWERLibCtl.CRViewer of control rptVisor was not a loaded control class.
+Line 72: The property name _Version in SPD is invalid.
+Line 73: The property name _ExtentX in SPD is invalid.
+Line 74: The property name _ExtentY in SPD is invalid.
+Line 75: The property name _StockProps in SPD is invalid.
+Line 85: The property name GrayAreaBackColor in SPD is invalid.
+Line 86: The property name SpreadDesigner in SPD is invalid.
+Line 87: The property name ClipboardOptions in SPD is invalid.
+Line 95: The property name lastProp in rptVisor is invalid.
+Line 96: The property name _cx in rptVisor is invalid.
+Line 97: The property name _cy in rptVisor is invalid.
+Line 98: The property name DisplayGroupTree in rptVisor is invalid.
+Line 99: The property name DisplayToolbar in rptVisor is invalid.
+Line 100: The property name EnableGroupTree in rptVisor is invalid.
+Line 101: The property name EnableNavigationControls in rptVisor is invalid.
+Line 102: The property name EnableStopButton in rptVisor is invalid.
+Line 103: The property name EnablePrintButton in rptVisor is invalid.
+Line 104: The property name EnableZoomControl in rptVisor is invalid.
+Line 105: The property name EnableCloseButton in rptVisor is invalid.
+Line 106: The property name EnableProgressControl in rptVisor is invalid.
+Line 107: The property name EnableSearchControl in rptVisor is invalid.
+Line 108: The property name EnableRefreshButton in rptVisor is invalid.
+Line 109: The property name EnableDrillDown in rptVisor is invalid.
+Line 110: The property name EnableAnimationControl in rptVisor is invalid.
+Line 111: The property name EnableSelectExpertButton in rptVisor is invalid.
+Line 112: The property name EnableToolbar in rptVisor is invalid.
+Line 113: The property name DisplayBorder in rptVisor is invalid.
+Line 114: The property name DisplayTabs in rptVisor is invalid.
+Line 115: The property name DisplayBackgroundEdge in rptVisor is invalid.
+Line 116: The property name SelectionFormula in rptVisor is invalid.
+Line 117: The property name EnablePopupMenu in rptVisor is invalid.
+Line 118: The property name EnableExportButton in rptVisor is invalid.
+Line 119: The property name EnableSearchExpertButton in rptVisor is invalid.
+Line 120: The property name EnableHelpButton in rptVisor is invalid.
+Line 121: The property name LaunchHTTPHyperlinksInNewBrowser in rptVisor is invalid.

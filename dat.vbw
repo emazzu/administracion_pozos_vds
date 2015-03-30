@@ -1,0 +1,16 @@
+MainMDI = 101, 20, 653, 472, C, 0, 4, 1011, 619, C
+funcGenerales = 66, 87, 588, 539, C
+funcINI = 44, 58, 566, 510, C
+funcSQLconect = 22, 29, 457, 481, C
+gridFRM = 110, 145, 655, 597, Z, 88, 116, 610, 568, C
+buscarFRM = 0, 0, 0, 0, C, 154, 203, 953, 655, C
+filtrarFRM = 132, 174, 931, 626, C, 0, 0, 799, 452, C
+filtrarGenFRM = 0, 0, 0, 0, C, 22, 29, 821, 481, C
+importarFRM = 44, 58, 734, 499, C, 44, 58, 843, 510, C
+procesosFRM = 0, 0, 0, 0, C, 66, 87, 865, 539, C
+reportesFRM = 0, 0, 0, 0, C, 88, 116, 887, 568, CZ
+conexionFRM = 0, 0, 0, 0, C, 110, 145, 909, 597, C
+seguridadFRM = 44, 58, 566, 510, C, 22, 29, 544, 481, C
+totalizarFRM = 0, 0, 0, 0, C, 132, 174, 931, 626, C
+ExportarFRM = 0, 0, 618, 416, C, 154, 203, 953, 655, C
+acercaDeFRM = 0, 0, 0, 0, C, 66, 87, 712, 637, C

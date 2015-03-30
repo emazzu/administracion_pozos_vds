@@ -1,0 +1,14 @@
+[1008]
+ubicacionFrm=state;0;left;0;top;0;width;12990;height;6270;fila;1;col;9
+where=
+orderBy=[Fecha] desc
+ColumnasCongeladas=0
+ColumnasAncho=1;960;2;960;3;960;4;960;5;960;6;960;7;960;8;960;9;10785
+ColumnasOcultas=
+ColumnasDecimales=1;0;4;2;6;2;7;2;8;2
+Modo=P
+Operacion=VER
+[main]
+whereColumna=
+whereNombre=
+whereCondicion=

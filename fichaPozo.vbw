@@ -1,0 +1,4 @@
+funcGenerales = 0, 0, 0, 0, C
+funcINI = 0, 0, 0, 0, C
+funcSQLconect = 0, 0, 0, 0, C
+fichaPozo_FRM = 22, 29, 775, 470, Z, 0, 0, 753, 441, C
