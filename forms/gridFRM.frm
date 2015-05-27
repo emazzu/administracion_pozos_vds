@@ -87,6 +87,8 @@ Private m_spELIpermiso As Boolean           'store para ELI
 Private m_spIMPpermiso As Boolean           'store para IMP
 Private m_Esquema As ADODB.Fields           'estructura de la vista
 
+Private m_dtmFechaOperacionELI As Date
+
 Private m_ComboBoxPrimeraVez As Boolean     'para llenar los comboBox una sola vez
 
 Private m_Config() As String                'configuración de la grilla
@@ -145,6 +147,38 @@ Public Property Get dsiFormularioAnt() As String
   dsiFormularioAnt = m_FormularioAnt
 End Property
 
+
+Public Property Get dsiFechaOperacionELI() As Date
+  dsiFechaOperacionELI = m_dtmFechaOperacionELI
+End Property
+
+
+Public Property Let dsiFechaOperacionELI(ByVal dtm As Date)
+
+  '03/03/2009-----------------------------------------------------------------------------
+  'guarda la fecha utilizada para comparar con la fecha de cierre en el caso de eliminar
+      
+  'declare
+  Dim lngCol As Integer
+  Dim strFechaCierreNombre As String
+      
+  'get nombre de columna
+  strFechaCierreNombre = Me.dsiConfigGetValor("CIERRE")
+  
+  'get fila en donde se encuentra la fecha de cierre
+  lngCol = Me.spdGrid.SearchRow(0, 0, -1, strFechaCierreNombre, SearchFlagsNone)
+  
+  'set puntero a fila y columna
+ ' Me.spdGrid.row = 0
+  Me.spdGrid.col = lngCol
+    
+  'get fecha de operacion
+  m_dtmFechaOperacionELI = IIf(Me.spdGrid.Text <> "", Me.spdGrid.Text, "01/01/1900")
+
+End Property
+
+
+
 Public Property Get dsiHerramientas(blnB As Boolean) As Boolean
   
   MainMDI.tlbHerra.Buttons("cmd_forma_vista").Enabled = blnB
@@ -188,6 +222,7 @@ End Property
 
 Public Property Get dsiFormularioCambiar() As Boolean
     
+    
   'visualizar form en forma de planilla
   If (m_Formulario = "F" Or m_Formulario = "") Then
         
@@ -198,6 +233,11 @@ Public Property Get dsiFormularioCambiar() As Boolean
     'cuando cambio la forma de ver el form de formulario a planilla
     'recupera el tamaño origal de form, simpre y cuando este visible
     If Me.spdGrid.Visible Then
+      'si esta maximizado o minimizado lo paso a normal
+      If Me.WindowState <> 0 Then
+        Me.WindowState = 0
+      End If
+      
       Me.Height = Me.dsiAltoAnt
       Me.Width = Me.dsianchoAnt
     End If
@@ -238,6 +278,59 @@ Public Property Get dsiFormularioCambiar() As Boolean
     m_Formulario = "F"
     
   End If
+    
+    
+    
+'  'visualizar form en forma de planilla
+'  If (m_Formulario = "F" Or m_Formulario = "") Then
+'
+'    'hago visible grilla para planilla
+'    Me.spdGrid.Visible = True
+'    Me.spdE.Visible = False
+'
+'    'cuando cambio la forma de ver el form de formulario a planilla
+'    'recupera el tamaño origal de form, simpre y cuando este visible
+'    If Me.spdGrid.Visible Then
+'      Me.Height = Me.dsiAltoAnt
+'      Me.Width = Me.dsianchoAnt
+'    End If
+'
+'    m_Formulario = "P"
+'
+'  ElseIf m_Formulario = "P" Then
+'
+'    'guardo tamaño de original de form, esto lo hago porque con
+'    'esta forma de ver los datos, se modifica el tamaño del form
+'    Me.dsiAltoAnt = Me.Height
+'    Me.dsianchoAnt = Me.Width
+'
+'    'check si comboBox todavia no fueron configurados, lo hago, sino sigo de largo
+'    If Not Me.dsiComboBoxPrimeraVez Then
+'
+'      'dibuja pantalla
+'      blnB = Me.dsiFormularioDibujar()
+'
+'      'set celdas obligatorias, bloqueadas, listas
+'      blnB = Me.dsiFormularioDatosConfig()
+'
+'      'set comboBox configurados por primera vez
+'      Me.dsiComboBoxPrimeraVez = True
+'
+'    End If
+'
+'    'set ajustar form
+'    blnB = Me.dsiFormularioAjustar()
+'
+'    'set pasa el valor de las celdas de spdGrid a las celdas de spdE
+'    blnB = Me.dsiFormularioDatosPutPaF()
+'
+'    'hago visible grilla para formulario
+'    Me.spdGrid.Visible = False
+'    Me.spdE.Visible = True
+'
+'    m_Formulario = "F"
+'
+'  End If
   
 End Property
 
@@ -398,6 +491,8 @@ Public Property Get dsiFormularioDibujar() As Boolean
       Case conSmallInt, conInt, conTinyInt
         
         Me.spdE.CellType = CellTypeNumber
+        Me.spdE.TypeNumberMin = -999999999
+        Me.spdE.TypeNumberMax = 999999999
         Me.spdE.TypeNumberDecPlaces = 0
         Me.spdE.TypeHAlign = TypeHAlignRight
                    
@@ -405,6 +500,8 @@ Public Property Get dsiFormularioDibujar() As Boolean
       Case conMoney, conSmallMoney, conReal, conFloat, conNumeric, conDecimal
             
         Me.spdE.CellType = CellTypeNumber
+        Me.spdE.TypeNumberMin = -999999999
+        Me.spdE.TypeNumberMax = 999999999
         Me.spdE.TypeNumberDecPlaces = intDecimales
         Me.spdE.TypeNumberShowSep = False
         Me.spdE.TypeHAlign = TypeHAlignRight
@@ -475,23 +572,23 @@ Public Property Get dsiFormularioDibujar() As Boolean
   'el ancho de columnas lo establece automaticamente a la columna mas ancha
   'si la columna mas ancho es menor que 2000, set default 2000
   
-  'defa ancho en 2000
+  'DEFAULT ancho a 2000
   sngAnchoMaximo = 2000
   
-  'get ancho maximo formulario simple
+  'GET ancho maximo formulario simple
   If Me.spdE.MaxTextColWidth(1) + 50 > 2000 Then
     sngAnchoMaximo = Me.spdE.MaxTextColWidth(1) + 50
   End If
-  
+    
   'si formulario doble
   If Me.dsiFormularioDoble() Then
     
-    'get ancho formulario doble, si es > a ancho formulario simple
+    'GET ancho formulario doble, si es > a ancho formulario simple
     If Me.spdE.MaxTextColWidth(4) + 50 > sngAnchoMaximo Then
       sngAnchoMaximo = Me.spdE.MaxTextColWidth(4) + 50
     End If
     
-    'set ancho columnas formulario doble
+    'SET ancho columnas formulario doble
     Me.spdE.ColWidth(1) = sngAnchoMaximo
     Me.spdE.ColWidth(2) = sngAnchoMaximo
     Me.spdE.ColWidth(4) = sngAnchoMaximo
@@ -499,7 +596,7 @@ Public Property Get dsiFormularioDibujar() As Boolean
     
   Else
     
-    'set ancho columnas formulario simple
+    'SET ancho columnas formulario simple
     Me.spdE.ColWidth(1) = sngAnchoMaximo
     Me.spdE.ColWidth(2) = sngAnchoMaximo
     
@@ -516,16 +613,25 @@ Public Property Get dsiFormularioDibujar() As Boolean
   Next
   Me.spdE.Height = sngTotal
   
-  'set ancho de grilla
+  ' SET ancho de grilla
   sngTotal = 0
   For intFila = 0 To Me.spdE.MaxCols
     sngTotal = sngTotal + Me.spdE.ColWidth(intFila) + 18
   Next
-  Me.spdE.Width = sngTotal
+  
+  
+    '   21/05/2015
+    '   Edu Mazzu
+    '   Para que cuando hago clic en modo edicion o visualizacion, modo formulario, ajuste grilla a ancho de formulario
+    '
+    Me.spdE.Width = Me.ScaleWidth
+    'Me.spdE.Width = sngTotal
+          
           
   'set modifica grilla en ForeGround
   Me.spdE.ReDraw = True
-          
+
+
 End Property
 
 Public Property Get dsiFormularioAjustar() As Boolean
@@ -833,6 +939,7 @@ Public Property Get dsiFormularioDatosINS() As Boolean
 
 End Property
 
+
 Public Property Get dsiFormularioDatosEDI() As Boolean
     
   'guardo en que modo esta el formulario antes de INS
@@ -857,20 +964,197 @@ End Property
 
 Public Property Get dsiFormularioDatosELI() As Boolean
     
-  'guardo en que modo esta el formulario antes de INS
-  Me.dsiFormularioAnt = Me.dsiFormulario
+    
+    
+  Dim cont, intCont, intIDposicion, intContSel, intPosParam As Integer
+  Dim strIDnombre, strCadenaID, strParcial, strFinal, strIdError, strParcialVista, strFechaCierreNombre, strIdParam As String
+  Dim a, b, c, d, varIDvalor, varValor, varIdParam As Variant
+    
+  blnNinguno = False '07/09/09
   
-  'si formulario en modo planilla, fuerzo y cambio a modo formulario
-  If Me.dsiFormulario = "P" Then
-    blnB = Me.dsiFormularioCambiar()
-  End If
-   
-  'bloqueo barra herramientas
-  blnB = Me.dsiHerramientas(False)
-  blnB = Me.dsiHerramientasComfirmar(True)
-  
-  'set operacion
+ 'set operacion
   Me.dsiOperacion = "ELI"
+  
+  'busco nombre columna ID
+  strIDnombre = Me.dsiConfigGetValor("CLAVE")
+
+  'check sino encuentra el nombre de la columna ID, default ID
+  If strIDnombre = "" Then
+    strIDnombre = "id"
+  End If
+  
+  'busco la columna donde se encuentra ID
+  intIDposicion = Me.spdGrid.SearchRow(0, 0, -1, strIDnombre, SearchFlagsNone)
+  
+  'search fila en donde se encuentra IDParam
+  intPosParam = Me.spdGrid.SearchRow(0, 0, -1, strIdParam, SearchFlagsNone)
+
+  
+  'guardo
+  Me.spdGrid.GetSelection 1, a, b, c, d
+ 
+  'recorro los registros seleccionados
+  For intContSel = b To d
+    
+    'get valor columna ID
+    Me.spdGrid.GetText intIDposicion, intContSel, varIDvalor
+  
+    'armo el string de los id a eliminar
+    If strCadenaID = "" Then
+      strCadenaID = varIDvalor
+    Else
+      strCadenaID = strCadenaID & "," & varIDvalor
+    End If
+        
+  Next intContSel
+  
+  'mensaje de confirmacion para eliminar
+  intRes = MsgBox("Desea eliminar la información seleccionada, correspondiente a los siguientes ID: " & Chr(13) & Chr(13) & strCadenaID, vbDefaultButton2 + vbQuestion + vbApplicationModal + vbOKCancel, "Atención..")
+    
+  'si cancelo me voy y sino ejecuto eliminar
+  If intRes <> 1 Then
+    Exit Sub
+  End If
+  
+  'habilito cambios en backgraund
+  Me.spdGrid.ReDraw = False
+       
+  'pongo como activa la primera celda para que funcione tanto si selecciono de arriba para abajo o al reves
+  Me.spdGrid.SetActiveCell 1, b
+    
+  'set ultima fila seleccionada
+  blnB = Me.dsiFilaPintaNo(-1, d)
+    
+  'recorro los registros seleccionados
+  For intContSel = b To d
+      
+    'pongo como fila activa mientras recorro
+    Me.spdGrid.row = Me.spdGrid.ActiveRow
+      
+    For intCont = 1 To Me.spdGrid.MaxCols
+                         
+      'busco nombre de la columna
+      Me.spdGrid.GetText intCont, 0, strColumna
+          
+      'busco si columna es no se actualiza
+      strValor = dsiConfigGetValor("NOACTUALIZO", strColumna)
+        
+      '----------------------------------------------------------------------------
+      strNinguno = Me.dsiConfigGetValor("NINGUNO", strColumna) '07/09/09
+    
+      'get valor
+      Me.spdGrid.GetText intCont, Me.spdGrid.row, varValor '07/09/09
+          
+      'si es (ninguno)
+      If strNinguno = 1 And varValor = "(Ninguno)" Then  '07/09/09
+        blnNinguno = True
+      End If
+      '----------------------------------------------------------------------------
+          
+      'si es la columna id guardo
+      If strValor = "" And UCase(strColumna) = UCase(strIDnombre) Then
+        'get valor columna ID
+        Me.spdGrid.GetText intIDposicion, Me.spdGrid.ActiveRow, varIDvalor
+        strParcial = varIDvalor
+        strParcialVista = varIDvalor
+      Else
+        If strValor = "" Then
+          strParcial = strParcial & ",null"
+          strParcialVista = strParcialVista & ",'" & varValor & "'"
+        End If
+      End If
+      
+    Next
+      
+    'get store procedure para eliminar
+    strSP = Me.dsiConfigGetValor("sp" & Me.dsiOperacion)
+        
+    'ckeck si no existe store procedure, salgo
+    If strSP = "" Then
+        
+        'mensaje de aviso
+        intRes = MsgBox("Opciòn del menu, que no cuenta con la posibilidad de eliminar, solicite al administrador.", vbExclamation + vbDefaultButton1 + vbApplicationModal + vbOKOnly, "Atención..")
+        Exit Property
+    
+        'set ultima fila seleccionada
+        blnB = Me.dsiFilaPintaNo(-1, d)
+        Me.spdGrid.SetActiveCell 1, Me.spdGrid.ActiveRow + 1
+    
+    End If
+      
+    'get valor columan idparam
+    Me.spdGrid.GetText intPosParam, Me.spdGrid.ActiveRow, varIdParam
+
+    
+      'No permite editar el ID 0 (Ninguno) cambio 27/05/2009
+      If varIDvalor = 0 Or blnNinguno Then
+        
+        'mensaje de aviso
+        intRes = MsgBox("ID utilizado por el sistema, no se puede modificar.", vbExclamation + vbDefaultButton1 + vbApplicationModal + vbOKOnly, "Atención..")
+  
+      Else
+        
+        Me.spdGrid.GetText intIDposicion, Me.spdGrid.ActiveRow, varIDvalor
+        
+        
+        'save info
+        SQLexec ("exec " & strSP & " " & strParcial)
+        
+        'check errores
+        If Not SQLparam.CnErrNumero = -1 Then
+          
+          SQLError
+          SQLclose
+          'Exit Sub
+      
+        Else
+          
+          'elimino fila de grilla spdGrid, pero como no encontre la forma hago lo siguiente
+          'tengo que agregar 1 fila y luego borrar 2
+          Me.spdGrid.MaxRows = Me.spdGrid.MaxRows + 1
+          Me.spdGrid.InsertRows Me.spdGrid.ActiveRow, 1
+          Me.spdGrid.DeleteRows Me.spdGrid.ActiveRow, 2
+          Me.spdGrid.MaxRows = Me.spdGrid.MaxRows - 2
+           
+          'graba el evento en la tabla dsiAuditoria
+          'dsiINSauditoria (strSP & " " & strParcialVista)
+        
+        End If
+      
+      End If
+      
+  Next
+        
+  'pongo como activa la fila inicial
+  Me.spdGrid.SetActiveCell 1, b
+    
+  'set pintar priemera fila seleccionada
+  blnB = Me.dsiFilaPintaSi(-1, b)
+    
+  'habilito cambios en foregraund
+  Me.spdGrid.ReDraw = True
+    
+    
+'   21/05/2015
+'   Edu Mazzu
+'   Deshabilitado, codigo original
+''-----------------------------------------------------------------------
+'  'guardo en que modo esta el formulario antes de INS
+'  Me.dsiFormularioAnt = Me.dsiFormulario
+'
+'  'si formulario en modo planilla, fuerzo y cambio a modo formulario
+'  If Me.dsiFormulario = "P" Then
+'    blnB = Me.dsiFormularioCambiar()
+'  End If
+'
+'  'bloqueo barra herramientas
+'  blnB = Me.dsiHerramientas(False)
+'  blnB = Me.dsiHerramientasComfirmar(True)
+'
+'  'set operacion
+'  Me.dsiOperacion = "ELI"
+''-----------------------------------------------------------------------
+  
   
 End Property
 
@@ -2533,12 +2817,56 @@ End Property
 'ajustar grilla a frm
 Public Property Get dsiAjusta() As Boolean
       
+  'REFRESH interactivo deshabilito
   Me.spdGrid.ReDraw = False
+  Me.spdE.ReDraw = False
+  
+  
   Me.spdGrid.Top = ScaleTop
   Me.spdGrid.Left = ScaleLeft
   Me.spdGrid.Height = Me.ScaleHeight
   Me.spdGrid.Width = Me.ScaleWidth
+
+  'ajusta grilla modo formulario
+  Me.spdE.Top = ScaleTop
+  Me.spdE.Left = ScaleLeft
+  Me.spdE.Width = Me.ScaleWidth
+
+  ' 21/05/2015
+  ' Edu Mazzu
+  '
+  'CHECK si grilla en modo de EDIT esta visible
+  If Me.spdE.Visible = True And Me.WindowState = vbNormal Then
+    
+    Me.Height = Me.spdE.Height + 600
+  
+  End If
+  
+    'DECLARE
+    Dim dbl_Repartir As Double
+    Dim int_Repartir_Adicional As Integer
+  
+    '   CALC valor adicional para que queda ajustada al 100%
+    int_Repartir_Adicional = IIf(Me.spdE.DataColCnt <= 2, 140, 70)
+    
+    '   CALC ancho que debe tener cada columna de la grilla
+    dbl_Repartir = (Me.ScaleWidth / IIf(Me.spdE.DataColCnt <= 2, 2, 4)) - int_Repartir_Adicional
+    
+    'ASSIGN pantalla simple
+    Me.spdE.ColWidth(1) = dbl_Repartir
+    Me.spdE.ColWidth(2) = dbl_Repartir
+    
+    'CHECK si es pantalla doble
+    If Me.spdE.DataColCnt = 5 Then
+      Me.spdE.ColWidth(4) = dbl_Repartir
+      Me.spdE.ColWidth(5) = dbl_Repartir
+    End If
+  
+  
+  'REFRESH interactivo habilito
   Me.spdGrid.ReDraw = True
+  Me.spdE.ReDraw = True
+
 
 End Property
 
@@ -2857,7 +3185,7 @@ Private Sub Form_Load()
     While Not rs.EOF
            
       'guardo configuracion
-      Me.dsiConfigAgregar = Array(rs!tipo, rs!columna, rs!valor, rs!parametro)
+      Me.dsiConfigAgregar = Array(rs!tipo, rs!columna, rs!Valor, rs!parametro)
       
       'puntero al proximo
       rs.MoveNext
@@ -3216,8 +3544,11 @@ Private Sub spdGrid_Click(ByVal col As Long, ByVal row As Long)
     Exit Sub
   End If
     
+  ' 21/05/2015
+  ' Edu Mazzu - DESHABILITADO
+  '
   'ajusto ancho
-  blnB = Me.dsiColumnasAnchoAjustar()
+  'blnB = Me.dsiColumnasAnchoAjustar()
   
 End Sub
 

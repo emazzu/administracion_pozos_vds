@@ -457,6 +457,15 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Private m_dsiWhereGen(1, 3) As String
 
+'   21/05/2015
+'   Edu Mazzu   -   Para habilitar un vinculo y que pueda abrir un documento desde la aplicaciòn
+'
+'
+Const SW_SHOWNORMAL = 1
+Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+
+
+
 Public Property Get dsiWhereGenAgregar(ByVal strColumna As String, ByVal strNombre As String, ByVal strCondicion As String) As Boolean
   
   m_dsiWhereGen(1, 1) = strColumna    'nombre columna ej:   well id
@@ -717,7 +726,12 @@ Private Sub MDIForm_Load()
         If rs!padre = 0 Or IsNull(rs!padre) Then
           blnB = mnu.MenuItems.Add(0, "'" & rs!tipo & rs!ID & "'", , rs!nombre, , , , smiunCheckBox)
         Else
-          blnB = mnu.MenuItems.Add("'grp" & rs!padre & "'", "'" & rs!tipo & rs!ID & "'", , rs!nombre, , , , smiunCheckBox)
+          'blnB = mnu.MenuItems.Add("'grp" & rs!padre & "'", "'" & rs!tipo & rs!ID & "'", , rs!nombre, , , , smiunCheckBox)
+            If rs!tipo = "grp" Then
+                blnB = mnu.MenuItems.Add("'grp" & rs!padre & "'", "'" & rs!tipo & rs!ID & "'", , rs!nombre, , , , smiunCheckBox)
+                    Else
+                blnB = mnu.MenuItems.Add("'grp" & rs!padre & "'", "'" & rs!tipo & rs!ID & "'", , rs!nombre & " - (" & rs!ID & ")", , , , smiunCheckBox)
+            End If
         End If
         
       End If
@@ -821,6 +835,29 @@ Private Sub mnu_Click(ByVal ID As Long)
   Case "grp"
     
     
+  Case "lnk"
+  
+      ' 21/05/2015
+      'Edu Mazzu    -   VINCULO - agregar un reporte mediante un vinculo
+      
+      'get nombre VINCULO
+      strT = "select valor from dsiOPCconfig where tipo = 'VINCULO' and IDmenu = " & SQLparam.IDmenu & " and IDopc = " & IDopc
+      Set rs = SQLexec(strT)
+    
+      'chequeo error
+      If Not SQLparam.CnErrNumero = -1 Then
+        SQLError
+        SQLclose
+        Exit Sub
+      Else
+        If Not rs.EOF Then
+          strRuta = rs!Valor
+          ShellExecute Me.hwnd, "open", strRuta, "", App.Path, SW_SHOWNORMAL
+          Exit Sub
+        End If
+      End If
+    
+    
   Case "per"
     
     'check EXIT, salgo
@@ -868,7 +905,7 @@ Private Sub mnu_Click(ByVal ID As Long)
     End If
     
     'save nombre de archivo
-    strT = rs!valor
+    strT = rs!Valor
     
     'cierro
     SQLclose
@@ -897,10 +934,13 @@ Private Sub mnu_Click(ByVal ID As Long)
       
     Next frmOpen
     
+    '   21/05/2015
+    '   Edu Mazzu   -   Deshabilito la posibilidad de que no se puedan abrir mas de una opcion al mismo tiempo.
+    '
     'si open, escapo
-    If Not blnOpen Then
-      Exit Sub
-    End If
+'    If Not blnOpen Then
+'      Exit Sub
+'    End If
       
     'opciones comunes
     If IDtipo = "opc" Then
