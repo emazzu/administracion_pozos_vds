@@ -3,7 +3,7 @@ Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Object = "{0F0877EF-2A93-4AE6-8BA8-4129832C32C3}#230.0#0"; "SmartMenuXP.ocx"
 Begin VB.MDIForm MainMDI 
    BackColor       =   &H00C0C0C0&
-   Caption         =   "OXY data - V.2009.9.1"
+   Caption         =   "OXY data - V.2015.06.09"
    ClientHeight    =   6765
    ClientLeft      =   60
    ClientTop       =   405
@@ -262,7 +262,7 @@ Begin VB.MDIForm MainMDI
          EndProperty
          BeginProperty Button13 {66833FEA-8583-11D1-B16A-00C0F0283628} 
             Key             =   "cmd_buscar"
-            Object.ToolTipText     =   "Buscar"
+            Object.ToolTipText     =   "Buscar - DESHABILITADA"
             ImageIndex      =   12
          EndProperty
          BeginProperty Button14 {66833FEA-8583-11D1-B16A-00C0F0283628} 
@@ -457,13 +457,13 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Private m_dsiWhereGen(1, 3) As String
 
+Dim aa As Variant
+
 '   21/05/2015
 '   Edu Mazzu   -   Para habilitar un vinculo y que pueda abrir un documento desde la aplicaciòn
-'
-'
+
 Const SW_SHOWNORMAL = 1
 Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
-
 
 
 Public Property Get dsiWhereGenAgregar(ByVal strColumna As String, ByVal strNombre As String, ByVal strCondicion As String) As Boolean
@@ -630,7 +630,7 @@ Public Property Get dsiHerramientas(blnB As Boolean) As Boolean
   Me.tlbHerra.Buttons("cmd_insertar").Enabled = blnB
   Me.tlbHerra.Buttons("cmd_editar").Enabled = blnB
   Me.tlbHerra.Buttons("cmd_eliminar").Enabled = blnB
-  Me.tlbHerra.Buttons("cmd_buscar").Enabled = blnB
+  Me.tlbHerra.Buttons("cmd_buscar").Enabled = False
   Me.tlbHerra.Buttons("cmd_filtro_abr").Enabled = blnB
   Me.tlbHerra.Buttons("cmd_filtro_gua").Enabled = blnB
   Me.tlbHerra.Buttons("cmd_filtro_rap").Enabled = blnB
@@ -651,6 +651,7 @@ Public Property Get dsiHerramientas(blnB As Boolean) As Boolean
   Me.tlbHerra.Buttons("cmd_exportar").Enabled = blnB
   Me.tlbHerra.Buttons("cmd_importar").Enabled = blnB
   
+ 
 End Sub
 
 Public Property Get dsiHerramientasComfirmar(blnB As Boolean) As Boolean
@@ -752,7 +753,12 @@ Private Sub MDIForm_Load()
   blnB = mnu.MenuItems.Add("'grp9000'", "'per9002'", , "Security", , , , smiunCheckBox)
   blnB = mnu.MenuItems.Add("'grp9000'", "'per9004'", , "Costs", , , , smiunCheckBox)
   blnB = mnu.MenuItems.Add("'grp9000'", "'per9005'", , "About DSInfo", , , , smiunCheckBox)
+  
+  'ADD news - lo vinculamos con un HTML de novedades
+  blnB = mnu.MenuItems.Add("'grp9000'", "'per9009'", , "News", , , , smiunCheckBox)
+  
   blnB = mnu.MenuItems.Add("'grp9000'", "'per9999'", , "Exit", , , , smiunCheckBox)
+          
           
   'get where General from INI
   blnB = Me.dsiWhereGenAgregar(ReadIni("main", "whereColumna"), ReadIni("main", "whereNombre"), ReadIni("main", "whereCondicion"))
@@ -851,7 +857,7 @@ Private Sub mnu_Click(ByVal ID As Long)
         Exit Sub
       Else
         If Not rs.EOF Then
-          strRuta = rs!Valor
+          strRuta = rs!valor
           ShellExecute Me.hwnd, "open", strRuta, "", App.Path, SW_SHOWNORMAL
           Exit Sub
         End If
@@ -885,6 +891,32 @@ Private Sub mnu_Click(ByVal ID As Long)
       acercaDeFRM.Show vbModal
     End If
     
+    'CHECK si news
+    If IDopc = 9009 Then
+    
+      ' 09/06/2015
+      'Edu Mazzu    -   VINCULO - agregar un reporte mediante un vinculo
+      
+      'get nombre VINCULO
+      strT = "select valor from dsiOPCconfig where tipo = 'VINCULO' and IDmenu = " & SQLparam.IDmenu & " and IDopc = " & IDopc
+      Set rs = SQLexec(strT)
+    
+      'chequeo error
+      If Not SQLparam.CnErrNumero = -1 Then
+        SQLError
+        SQLclose
+        Exit Sub
+      Else
+        If Not rs.EOF Then
+          strRuta = rs!valor
+          ShellExecute Me.hwnd, "open", strRuta, "", App.Path, SW_SHOWNORMAL
+          Exit Sub
+        End If
+      End If
+    
+    End If
+    
+    
     
   Case "exe", "cmd"                   'ejecutables y scripts
     
@@ -905,7 +937,7 @@ Private Sub mnu_Click(ByVal ID As Long)
     End If
     
     'save nombre de archivo
-    strT = rs!Valor
+    strT = rs!valor
     
     'cierro
     SQLclose
@@ -924,7 +956,7 @@ Private Sub mnu_Click(ByVal ID As Long)
     blnOpen = True
     For Each frmOpen In Forms
         
-      If frmOpen.Caption = IDopc & " - " & mnu.MenuItems.Caption(ID) Then
+      If frmOpen.Caption = mnu.MenuItems.Caption(ID) Then
        
        'check si open, lo hago activo
        frmOpen.SetFocus
@@ -1121,3 +1153,4 @@ Private Sub tlbHerra_ButtonMenuClick(ByVal ButtonMenu As MSComctlLib.ButtonMenu)
   frm.Show
       
 End Sub
+

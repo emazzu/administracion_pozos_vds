@@ -1,7 +1,7 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "Mscomctl.ocx"
-Object = "{F856EC8B-F03C-4515-BDC6-64CBD617566A}#6.0#0"; "fpspr60.ocx"
-Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{F856EC8B-F03C-4515-BDC6-64CBD617566A}#6.0#0"; "fpSpr60.ocx"
+Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "comdlg32.ocx"
 Begin VB.Form importarFRM 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Importando..."
@@ -728,7 +728,7 @@ Public Property Get dsiOrigenAbrir()
   Dim List(10) As String
     
   'si formato excel filtro xls
-  Me.comDestino.Filter = "Archivos de Excel (*.xls)|*.xls"
+    Me.comDestino.Filter = "Archivos de Excel 97-2003|*.xls|"
     
   'titulo de ventana
   Me.comDestino.DialogTitle = "Seleccionar archivo..."
@@ -754,7 +754,7 @@ Public Property Get dsiOrigenAbrir()
   Screen.MousePointer = vbDefault
     
   'set activa cambios backGround
-  Me.spdO.Redraw = False
+  Me.spdO.ReDraw = False
   
   'change apariencia grilla
   blnB = Me.dsiSpdAparienciaO()
@@ -764,7 +764,7 @@ Public Property Get dsiOrigenAbrir()
   Me.spdO.MaxCols = Me.spdO.DataColCnt
   
   'set activa cambios en foreGround
-  Me.spdO.Redraw = True
+  Me.spdO.ReDraw = True
   
   'config columnas destino
   blnB = Me.dsiColumnasConfig()

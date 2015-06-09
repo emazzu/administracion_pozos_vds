@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.Form acercaDeFRM 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "About DSInfo Data..."
-   ClientHeight    =   4875
+   ClientHeight    =   3645
    ClientLeft      =   2340
    ClientTop       =   1935
    ClientWidth     =   5460
@@ -11,41 +11,10 @@ Begin VB.Form acercaDeFRM
    LockControls    =   -1  'True
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   4875
+   ScaleHeight     =   3645
    ScaleWidth      =   5460
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
-   Begin VB.Frame Frame3 
-      Height          =   1100
-      Left            =   90
-      TabIndex        =   6
-      Top             =   3165
-      Width           =   5300
-      Begin VB.Label Label6 
-         Alignment       =   2  'Center
-         BackStyle       =   0  'Transparent
-         Caption         =   "www.dsinfo.com.ar"
-         ForeColor       =   &H00000000&
-         Height          =   240
-         Left            =   90
-         TabIndex        =   8
-         Top             =   700
-         Width           =   5200
-         WordWrap        =   -1  'True
-      End
-      Begin VB.Label Label4 
-         Alignment       =   2  'Center
-         BackStyle       =   0  'Transparent
-         Caption         =   "ventas@dsinfo.com.ar - soporte-aplicaciones@dsinfo.com.ar  soporte-tecnico@dsinfo.com.ar"
-         ForeColor       =   &H00000000&
-         Height          =   500
-         Left            =   80
-         TabIndex        =   7
-         Top             =   200
-         Width           =   5200
-         WordWrap        =   -1  'True
-      End
-   End
    Begin VB.Frame Frame2 
       Height          =   1875
       Left            =   90
@@ -59,7 +28,7 @@ Begin VB.Form acercaDeFRM
          Height          =   240
          Index           =   1
          Left            =   555
-         TabIndex        =   10
+         TabIndex        =   6
          Top             =   1545
          Width           =   4500
          WordWrap        =   -1  'True
@@ -79,20 +48,9 @@ Begin VB.Form acercaDeFRM
          Height          =   240
          Index           =   0
          Left            =   1695
-         TabIndex        =   9
-         Top             =   1005
-         Width           =   3525
-         WordWrap        =   -1  'True
-      End
-      Begin VB.Label Label2 
-         BackStyle       =   0  'Transparent
-         Caption         =   "Copyright (c) 2006 por Eduardo Mazzucchelli."
-         ForeColor       =   &H00000000&
-         Height          =   240
-         Left            =   1700
          TabIndex        =   5
-         Top             =   750
-         Width           =   3250
+         Top             =   705
+         Width           =   3525
          WordWrap        =   -1  'True
       End
       Begin VB.Label Label1 
@@ -130,9 +88,9 @@ Begin VB.Form acercaDeFRM
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   345
-      Left            =   4100
+      Left            =   4095
       TabIndex        =   0
-      Top             =   4380
+      Top             =   3210
       Width           =   1260
    End
 End

@@ -11,6 +11,30 @@ Begin VB.Form gridFRM
    MDIChild        =   -1  'True
    ScaleHeight     =   3105
    ScaleWidth      =   6360
+   Begin VB.Frame frm_Buscar 
+      Height          =   525
+      Left            =   0
+      TabIndex        =   2
+      Top             =   -60
+      Width           =   6375
+      Begin VB.TextBox txt_Buscar 
+         Height          =   285
+         Left            =   60
+         TabIndex        =   3
+         Text            =   "Para hacer una busqueda, que no sea exacto, agrega el *..."
+         Top             =   150
+         Width           =   4335
+      End
+      Begin VB.CommandButton cmd_Buscar_Siguiente 
+         Height          =   285
+         Left            =   4470
+         Picture         =   "gridFRM.frx":038A
+         Style           =   1  'Graphical
+         TabIndex        =   4
+         Top             =   165
+         Width           =   555
+      End
+   End
    Begin MSComDlg.CommonDialog comArchivos 
       Left            =   5640
       Top             =   1920
@@ -19,14 +43,14 @@ Begin VB.Form gridFRM
       _Version        =   393216
    End
    Begin FPSpreadADO.fpSpread spdGrid 
-      Height          =   1650
+      Height          =   1260
       Left            =   150
       TabIndex        =   0
-      Top             =   120
+      Top             =   735
       Width           =   5085
       _Version        =   393216
       _ExtentX        =   8969
-      _ExtentY        =   2910
+      _ExtentY        =   2222
       _StockProps     =   64
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "MS Sans Serif"
@@ -37,13 +61,13 @@ Begin VB.Form gridFRM
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      SpreadDesigner  =   "gridFRM.frx":038A
+      SpreadDesigner  =   "gridFRM.frx":0714
    End
    Begin FPSpreadADO.fpSpread spdE 
       Height          =   945
       Left            =   120
       TabIndex        =   1
-      Top             =   1980
+      Top             =   2070
       Visible         =   0   'False
       Width           =   5100
       _Version        =   393216
@@ -59,7 +83,7 @@ Begin VB.Form gridFRM
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      SpreadDesigner  =   "gridFRM.frx":0588
+      SpreadDesigner  =   "gridFRM.frx":0912
    End
    Begin MSComDlg.CommonDialog comDestino 
       Left            =   5640
@@ -111,6 +135,13 @@ Private m_OrderBy As String
 Private m_AltoAux As Long
 Private m_AnchoAux As Long
 Private m_FormularioActivado As Boolean
+
+
+'   03/06/2015
+'   Edu Mazzu
+'   Variable privada al formulario, utilizada para buscar el siguiente
+Private m_lng_ultima_fila_encontrada As Long
+
 
 Const SW_SHOWNORMAL = 1
 '** 08/01/08 --
@@ -190,7 +221,7 @@ Public Property Get dsiHerramientas(blnB As Boolean) As Boolean
   MainMDI.tlbHerra.Buttons("cmd_insertar").Enabled = blnB
   MainMDI.tlbHerra.Buttons("cmd_editar").Enabled = blnB
   MainMDI.tlbHerra.Buttons("cmd_eliminar").Enabled = blnB
-  MainMDI.tlbHerra.Buttons("cmd_buscar").Enabled = blnB
+  MainMDI.tlbHerra.Buttons("cmd_buscar").Enabled = False
   MainMDI.tlbHerra.Buttons("cmd_filtro_abr").Enabled = blnB
   MainMDI.tlbHerra.Buttons("cmd_filtro_gua").Enabled = blnB
   MainMDI.tlbHerra.Buttons("cmd_filtro_rap").Enabled = blnB
@@ -606,12 +637,15 @@ Public Property Get dsiFormularioDibujar() As Boolean
   Me.spdE.Left = 50
   Me.spdE.Top = 50
               
-  'set altura de grilla
+  ' SET altura de grilla
   sngTotal = 0
   For intFila = 0 To Me.spdE.MaxRows
-    sngTotal = sngTotal + Me.spdE.RowHeight(intFila) + 20
+    sngTotal = sngTotal + Me.spdE.RowHeight(intFila) + 15
   Next
-  Me.spdE.Height = sngTotal
+  
+  
+  Me.spdE.Height = sngTotal + Me.frm_Buscar.Height
+  
   
   ' SET ancho de grilla
   sngTotal = 0
@@ -624,7 +658,7 @@ Public Property Get dsiFormularioDibujar() As Boolean
     '   Edu Mazzu
     '   Para que cuando hago clic en modo edicion o visualizacion, modo formulario, ajuste grilla a ancho de formulario
     '
-    Me.spdE.Width = Me.ScaleWidth
+    Me.spdE.Width = Me.ScaleWidth + 250
     'Me.spdE.Width = sngTotal
           
           
@@ -639,7 +673,7 @@ Public Property Get dsiFormularioAjustar() As Boolean
   'set alto y ancho de formulario, antes de modificar tamaño, cambio estado
   'si llega a estar minimizado o maximizado genera error
   Me.WindowState = 0
-  Me.Height = Me.spdE.Top + Me.spdE.Height + 550
+  Me.Height = Me.frm_Buscar.Height + Me.spdE.Height + 70
   Me.Width = Me.spdE.Width + 230
 
 End Property
@@ -2821,48 +2855,57 @@ Public Property Get dsiAjusta() As Boolean
   Me.spdGrid.ReDraw = False
   Me.spdE.ReDraw = False
   
-  
-  Me.spdGrid.Top = ScaleTop
-  Me.spdGrid.Left = ScaleLeft
-  Me.spdGrid.Height = Me.ScaleHeight
-  Me.spdGrid.Width = Me.ScaleWidth
-
-  'ajusta grilla modo formulario
-  Me.spdE.Top = ScaleTop
-  Me.spdE.Left = ScaleLeft
-  Me.spdE.Width = Me.ScaleWidth
-
   ' 21/05/2015
   ' Edu Mazzu
   '
   'CHECK si grilla en modo de EDIT esta visible
   If Me.spdE.Visible = True And Me.WindowState = vbNormal Then
-    
     Me.Height = Me.spdE.Height + 600
-  
   End If
+      
+    '   SET ancho automatico a frame Buscar
+    Me.frm_Buscar.Left = 10
+    Me.frm_Buscar.Width = IIf(Me.ScaleWidth < 20, 0, Me.ScaleWidth - 20)
   
-    'DECLARE
-    Dim dbl_Repartir As Double
-    Dim int_Repartir_Adicional As Integer
-  
-    '   CALC valor adicional para que queda ajustada al 100%
-    int_Repartir_Adicional = IIf(Me.spdE.DataColCnt <= 2, 140, 70)
+    '   SET ancho de text Buscar
+    Me.txt_Buscar.Left = Me.frm_Buscar.Left + 20
+    Me.txt_Buscar.Width = IIf(Me.ScaleWidth < 50, 0, Me.frm_Buscar.Width - Me.cmd_Buscar_Siguiente.Width - 50)
     
-    '   CALC ancho que debe tener cada columna de la grilla
-    dbl_Repartir = (Me.ScaleWidth / IIf(Me.spdE.DataColCnt <= 2, 2, 4)) - int_Repartir_Adicional
-    
-    'ASSIGN pantalla simple
-    Me.spdE.ColWidth(1) = dbl_Repartir
-    Me.spdE.ColWidth(2) = dbl_Repartir
-    
-    'CHECK si es pantalla doble
-    If Me.spdE.DataColCnt = 5 Then
-      Me.spdE.ColWidth(4) = dbl_Repartir
-      Me.spdE.ColWidth(5) = dbl_Repartir
-    End If
+  Me.cmd_Buscar_Siguiente.Left = Me.txt_Buscar.Left + Me.txt_Buscar.Width
+      
+  ' ADJUST grilla en modo formulario
+  Me.spdE.Top = ScaleTop + Me.frm_Buscar.Height
+  Me.spdE.Left = ScaleLeft
+  Me.spdE.Width = Me.ScaleWidth
   
+  ' ADJUST grilla en modo planilla
+  Me.spdGrid.Top = ScaleTop + Me.frm_Buscar.Height
+  Me.spdGrid.Left = ScaleLeft
+  Me.spdGrid.Height = IIf(Me.frm_Buscar.Height > Me.ScaleHeight, 0, Me.ScaleHeight - Me.frm_Buscar.Height)
+  Me.spdGrid.Width = Me.ScaleWidth
+
+
+  'DECLARE
+  Dim dbl_Repartir As Double
+  Dim int_Repartir_Adicional As Integer
+
+  '   CALC valor adicional para que queda ajustada al 100%
+  int_Repartir_Adicional = IIf(Me.spdE.DataColCnt <= 3, 130, 70)
   
+  '   CALC ancho que debe tener cada columna de la grilla
+  dbl_Repartir = (Me.ScaleWidth / IIf(Me.spdE.DataColCnt <= 3, 2, 4)) - int_Repartir_Adicional
+  
+  'ASSIGN pantalla simple
+  Me.spdE.ColWidth(1) = dbl_Repartir
+  Me.spdE.ColWidth(2) = dbl_Repartir
+  
+  'CHECK si es pantalla doble
+  If Me.spdE.DataColCnt = 5 Then
+    Me.spdE.ColWidth(4) = dbl_Repartir
+    Me.spdE.ColWidth(5) = dbl_Repartir
+  End If
+
+ 
   'REFRESH interactivo habilito
   Me.spdGrid.ReDraw = True
   Me.spdE.ReDraw = True
@@ -3103,6 +3146,91 @@ Public Property Get dsiRefresh(Optional ByVal blnNOTcnClose As Boolean) As Boole
 End Property
 
 
+Private Sub cmd_Buscar_Siguiente_Click()
+
+  Dim intRow As Long
+  Dim intCadenaTot As Integer
+  Dim blnB As Boolean
+  Dim str_Buscando As String
+   
+  ' CHECK si el buscar esta vacio, EXIT
+  If Me.txt_Buscar = "" Then
+    txt_Buscar.SetFocus
+    Beep
+    Exit Sub
+  End If
+   
+  ' cambio puntero mouse
+  Screen.MousePointer = vbHourglass
+  buscarFRM.Caption = "Buscando..."
+  
+  ' ASSING texto a buscar
+  str_Buscando = Me.txt_Buscar
+  
+    'CHECK si la busqueda contiene el asterisco que indice busqueda parcial
+    If InStr(Me.txt_Buscar, "*") <> 0 Then
+    
+        '   ASSIGN busqueda parcial a grilla y saco el asterisco, ya no lo necesito.
+        intCadenaTot = SearchFlagsPartialMatch
+        str_Buscando = Replace(str_Buscando, "*", "")
+        
+    Else
+        
+        intCadenaTot = SearchFlagsNone
+        
+    End If
+  
+  
+  'recorro grilla
+  intRow = m_lng_ultima_fila_encontrada + 1
+  Do While intRow <= Me.spdGrid.MaxRows
+  
+    'buscando en fila y todas las columnas
+    intRes = Me.spdGrid.SearchRow(intRow, 0, -1, str_Buscando, intCadenaTot)
+    
+    'si encontro
+    If intRes <> -1 Then
+                
+      'elimina fila pintada actual
+      blnB = Me.dsiFilaPintaNo(Me.spdGrid.ActiveCol, Me.spdGrid.ActiveRow)
+      
+      'set activa celda
+      Me.spdGrid.SetActiveCell intRes, intRow
+      
+      'pinta fila activa
+      blnB = Me.dsiFilaPintaSi(Me.spdGrid.ActiveCol, Me.spdGrid.ActiveRow)
+                
+      'muestro info en barra de estado
+      blnB = Me.dsiUbicacionGrillaSi()
+            
+      'si forma formulario activo actualizo datos
+      If Me.spdE.Visible Then
+        blnB = Me.dsiFormularioDatosPutPaF()
+      End If
+      
+      
+      m_lng_ultima_fila_encontrada = intRow
+      Exit Do
+    
+    End If
+      
+    intRow = intRow + 1
+      
+  Loop
+  
+  ' recupero puntero mouse
+  Screen.MousePointer = vbDefault
+  buscarFRM.Caption = "Buscar"
+  
+  'si no encontro nada
+  If intRow >= Me.spdGrid.MaxRows Then
+    intRes = MsgBox("Finalizó la búsqueda.", vbInformation + vbOKOnly, "atención...")
+    m_lng_ultima_fila_encontrada = 0
+  End If
+
+
+End Sub
+
 Private Sub Form_Activate()
   
   'set celda activa - sin uso a partir de 15/03/2005
@@ -3185,7 +3313,7 @@ Private Sub Form_Load()
     While Not rs.EOF
            
       'guardo configuracion
-      Me.dsiConfigAgregar = Array(rs!tipo, rs!columna, rs!Valor, rs!parametro)
+      Me.dsiConfigAgregar = Array(rs!tipo, rs!columna, rs!valor, rs!parametro)
       
       'puntero al proximo
       rs.MoveNext
@@ -3195,7 +3323,7 @@ Private Sub Form_Load()
   End If
   
   'leo otras configuraciones
-  Me.Caption = Me.dsiIDopc & " - " & Me.dsiTitulo
+  Me.Caption = Me.dsiTitulo
   arrUbica = keyIniToArray(Me.dsiIDopc, "ubicacionFrm")
   Me.dsiCondicion = keyIniToArray(Me.dsiIDopc, "where")
   Me.dsiOrderBy = ReadIni(Me.dsiIDopc, "orderBy")
@@ -3252,6 +3380,14 @@ Private Sub Form_Load()
 '  Me.mnuDet.MenuItems.Add 0, 1, smiNone, "Detalle"
 '  Me.mnuDet.MenuItems.Add 1, , smiNone, "Opción 1"
 '  Me.mnuDet.MenuItems.Add 1, , smiNone, "Opción 2"
+            
+            
+    '   03/06/2015
+    '   Edu Mazzu
+    '   INITIALIZE  para buscar filas dentro de la grilla
+    '               Ahora es privada al formulario, a ver como responde
+    m_lng_ultima_fila_encontrada = 0
+
             
 End Sub
 
@@ -3512,7 +3648,8 @@ Private Sub spdE_DblClick(ByVal col As Long, ByVal row As Long)
   'levanto el nombre de la columna
   Me.spdE.GetText 1, row, varNombre
     
-  If Me.dsiFormulario = "F" And Me.dsiConfigGetValor("VINCULO", varNombre) <> "" And col = 2 Then
+  'CHECK si se desea modificar el VINCULO y esta en modo FORMULARIO y la operacion es EDITAR y columna <> 2
+  If Me.dsiConfigGetValor("VINCULO", varNombre) <> "" And Me.dsiFormulario = "F" And Me.dsiOperacion = "EDI" And col = 2 Then
   
     With comArchivos
       .FileName = vbNullString
@@ -3527,6 +3664,7 @@ Private Sub spdE_DblClick(ByVal col As Long, ByVal row As Long)
         
       End If
     End With
+  
   End If
   
 End Sub
@@ -3711,3 +3849,97 @@ Private Sub spdGrid_MouseUp(Button As Integer, Shift As Integer, x As Single, y 
       
 End Sub
 
+Private Sub txt_Buscar_GotFocus()
+
+    'CLEAR mensaje
+    Me.txt_Buscar = ""
+
+End Sub
+
+'Private Sub txt_Buscar_KeyPress(KeyAscii As Integer)
+'
+'    'CHECK si apreto un enter, para iniciar busqueda
+'    If KeyAscii = 13 Then
+'
+'        Dim intRow As Long
+'        Dim intCadenaTot As Integer
+'        Dim blnB As Boolean
+'
+'        If Me.txt_Buscar = "" Then
+'          Me.txt_Buscar.SetFocus
+'          Beep
+'          Exit Sub
+'        End If
+'
+'        ' cambio puntero mouse
+'        Screen.MousePointer = vbHourglass
+'        'buscarFRM.Caption = "Buscando..."
+'
+'        'CHECK si la busqueda contiene el asterisco que indice busqueda parcial
+'        If InStr(Me.txt_Buscar, "*") <> 0 Then
+'
+'            '   ASSIGN busqueda parcial a grilla y saco el asterisco, ya no lo necesito.
+'            intCadenaTot = SearchFlagsPartialMatch
+'            Me.txt_Buscar = Replace(Me.txt_Buscar, "*", "")
+'
+'        Else
+'
+'            intCadenaTot = SearchFlagsNone
+'
+'        End If
+'
+'        'recorro grilla
+'        intRow = lngUltimoEncontrado + 1
+'        Do While intRow <= Me.spdGrid.MaxRows
+'
+'          'buscando en fila y todas las columnas
+'          intRes = Me.spdGrid.SearchRow(intRow, 0, -1, Me.txt_Buscar, intCadenaTot)
+'
+'          'si encontro
+'          If intRes <> -1 Then
+'
+'            'elimina fila pintada actual
+'            blnB = Me.dsiFilaPintaNo(Me.spdGrid.ActiveCol, Me.spdGrid.ActiveRow)
+'
+'            'set activa celda
+'            Me.spdGrid.SetActiveCell intRes, intRow
+'
+'            'pinta fila activa
+'            blnB = Me.dsiFilaPintaSi(Me.spdGrid.ActiveCol, Me.spdGrid.ActiveRow)
+'
+'            'muestro info en barra de estado
+'            blnB = Me.dsiUbicacionGrillaSi()
+'
+'            'si forma formulario activo actualizo datos
+'            If Me.spdE.Visible Then
+'              blnB = Me.dsiFormularioDatosPutPaF()
+'            End If
+'
+'
+'            lngUltimoEncontrado = intRow
+'            'cmdBuscar.Caption = "&Buscar Siguiente"
+'            'Exit Do
+'
+'          End If
+'
+'          intRow = intRow + 1
+'
+'        Loop
+'
+'        ' recupero puntero mouse
+'        Screen.MousePointer = vbDefault
+'        'buscarFRM.Caption = "Buscar"
+'
+'        'si no encontro nada
+'        If intRow >= Me.spdGrid.MaxRows Then
+'          intRes = MsgBox("Finalizó la búsqueda.", vbInformation + vbOKOnly, "atención...")
+'          'cmdBuscar.Caption = "&Buscar"
+'          lngUltimoEncontrado = 0
+'        End If
+'
+'    End If
+'
+'End Sub
+Private Sub txt_Buscar_Change()
+
+End Sub

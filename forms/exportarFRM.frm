@@ -305,7 +305,7 @@ Private Sub cmdExportar_Click()
     
   'si formato excel filtro xls, sino txt
   If Me.opcEXC = True Then
-    Me.comDestino.Filter = "Archivos de Excel (*.xls)|*.xls"
+    Me.comDestino.Filter = "Archivos de Excel|*.xls"
   Else
     Me.comDestino.Filter = "Archivos de texto (*.txt)|*.txt"
   End If
@@ -430,7 +430,7 @@ Private Sub lstEsquema_ItemCheck(Item As Integer)
   If lstEsquema = "(todos)" Then
         
     'cambios de grilla backGround
-    Me.spdAux.Redraw = False
+    Me.spdAux.ReDraw = False
     
     'limpio grilla, si seleccion todos y ya existe algun dato
     If Me.dsiColumnasCant > 0 Then
@@ -468,7 +468,7 @@ Private Sub lstEsquema_ItemCheck(Item As Integer)
     Next
       
     'cambios de grilla foreGround
-    Me.spdAux.Redraw = True
+    Me.spdAux.ReDraw = True
     
   'click en un item solo
   Else
